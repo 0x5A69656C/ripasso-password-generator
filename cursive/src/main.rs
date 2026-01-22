@@ -159,7 +159,7 @@ fn copy(ui: &mut Cursive, store: &PasswordStoreType) {
         helpers::set_clipboard("").unwrap();
     });
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Copied password to copy buffer for 40 seconds"));
+        l.set_content("Copied password to copy buffer for 40 seconds");
     });
 }
 
@@ -188,7 +188,7 @@ fn copy_first_line(ui: &mut Cursive, store: &PasswordStoreType) {
     });
     ui.call_on_name("status_bar", |l: &mut TextView| {
         l.set_content(
-            CATALOG.gettext("Copied first line of password to copy buffer for 40 seconds"),
+            "Copied first line of password to copy buffer for 40 seconds",
         );
     });
 }
@@ -213,7 +213,7 @@ fn copy_mfa(ui: &mut Cursive, store: &PasswordStoreType) {
     }
 
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Copied MFA code to copy buffer"));
+        l.set_content("Copied MFA code to copy buffer");
     });
 }
 
@@ -238,7 +238,7 @@ fn copy_name(ui: &mut Cursive) {
     }
 
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Copied file name to copy buffer"));
+        l.set_content("Copied file name to copy buffer");
     });
 }
 
@@ -274,15 +274,15 @@ fn delete(ui: &mut Cursive, store: &PasswordStoreType) {
     let store = store.clone();
     ui.add_layer(CircularFocus::new(
         Dialog::around(TextView::new(
-            CATALOG.gettext("Are you sure you want to delete the password?"),
+            "Are you sure you want to delete the password?",
         ))
-        .button(CATALOG.gettext("Yes"), move |ui: &mut Cursive| {
+        .button("Yes", move |ui: &mut Cursive| {
             do_delete(ui, &store);
             ui.call_on_name("status_bar", |l: &mut TextView| {
-                l.set_content(CATALOG.gettext("Password deleted"));
+                l.set_content("Password deleted");
             });
         })
-        .dismiss_button(CATALOG.gettext("Cancel")),
+        .dismiss_button("Cancel"),
     ));
 }
 
@@ -335,8 +335,8 @@ fn show_file_history(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> 
     }
 
     let d = Dialog::around(file_history_view)
-        .title(CATALOG.gettext("File History"))
-        .dismiss_button(CATALOG.gettext("Ok"));
+        .title("File History")
+        .dismiss_button("Ok");
 
     let file_history_event = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();
@@ -384,7 +384,7 @@ fn password_save(
             ui.pop_layer();
         }
         ui.call_on_name("status_bar", |l: &mut TextView| {
-            l.set_content(CATALOG.gettext("Updated password entry"));
+            l.set_content("Updated password entry");
         });
 
         ui.pop_layer();
@@ -419,22 +419,22 @@ fn open(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
     };
     let store = store.clone();
     let d = Dialog::around(TextArea::new().content(&password).with_name("editbox"))
-        .button(CATALOG.gettext("Save"), move |s| {
+        .button("Save", move |s| {
             let mut new_secret = s
                 .call_on_name("editbox", |e: &mut TextArea| e.get_content().to_string())
                 .unwrap();
 
             if new_secret.contains("otpauth://") {
                 let store = store.clone();
-                let d = Dialog::around(TextView::new(CATALOG.gettext("It seems like you are trying to save a TOTP code to the password store. This will reduce your 2FA solution to just 1FA, do you want to proceed?")))
-                    .button(CATALOG.gettext("Save"), move |s| {
+                let d = Dialog::around(TextView::new("It seems like you are trying to save a TOTP code to the password store. This will reduce your 2FA solution to just 1FA, do you want to proceed?"))
+                    .button("Save", move |s| {
                         let mut confirmed_new_secret = s
                             .call_on_name("editbox", |e: &mut TextArea| e.get_content().to_string())
                             .unwrap();
                         do_password_save(s, &confirmed_new_secret, &store, true);
                         confirmed_new_secret.zeroize();
                     })
-                    .dismiss_button(CATALOG.gettext("Close"));
+                    .dismiss_button("Close");
 
                 let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
                     s.pop_layer();
@@ -446,7 +446,7 @@ fn open(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
             new_secret.zeroize();
 
         })
-        .button(CATALOG.gettext("Generate Password"), move |s| {
+        .button("Generate Password", move |s| {
             let mut new_password = password_generator(20, PasswordGenerationCategory::AsciiOnly);
             s.call_on_name("editbox", |e: &mut TextArea| {
                 e.set_content(&new_password);
@@ -455,7 +455,7 @@ fn open(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
         })
 
 
-        .button(CATALOG.gettext("Generate Passphrase"), move |s| {
+        .button("Generate Passphrase", move |s| {
             let mut new_password = match passphrase_generator(6) {
                 Ok(words) => words.join(" "),
                 Err(err) => {
@@ -468,7 +468,7 @@ fn open(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
             });
             new_password.zeroize();
         })
-        .dismiss_button(CATALOG.gettext("Close"));
+        .dismiss_button("Close");
 
     let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();
@@ -537,7 +537,7 @@ fn rename_file_dialog(ui: &mut Cursive, store: &PasswordStoreType) {
     let mut new_name_fields = LinearLayout::horizontal();
 
     old_name_fields.add_child(
-        TextView::new(CATALOG.gettext("Old file name: "))
+        TextView::new("Old file name: ")
             .with_name("old_name_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -547,7 +547,7 @@ fn rename_file_dialog(ui: &mut Cursive, store: &PasswordStoreType) {
             .fixed_size((50_usize, 1_usize)),
     );
     new_name_fields.add_child(
-        TextView::new(CATALOG.gettext("New file name: "))
+        TextView::new("New file name: ")
             .with_name("new_name_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -563,13 +563,13 @@ fn rename_file_dialog(ui: &mut Cursive, store: &PasswordStoreType) {
     let store2 = store.clone();
 
     let d = Dialog::around(fields)
-        .title(CATALOG.gettext("Rename File"))
-        .button(CATALOG.gettext("Rename"), move |ui: &mut Cursive| {
+        .title("Rename File")
+        .button("Rename", move |ui: &mut Cursive| {
             if let Err(e) = do_rename_file(ui, &store) {
                 helpers::errorbox(ui, &e);
             }
         })
-        .dismiss_button(CATALOG.gettext("Cancel"));
+        .dismiss_button("Cancel");
 
     let ev = OnEventView::new(d)
         .on_event(Key::Esc, |s| {
@@ -625,7 +625,7 @@ fn new_password_save(
             s.pop_layer();
 
             s.call_on_name("status_bar", |l: &mut TextView| {
-                l.set_content(CATALOG.gettext("Created new password"));
+                l.set_content("Created new password");
             });
         }
     }
@@ -659,11 +659,11 @@ fn create_save(s: &mut Cursive, store: &PasswordStoreType) {
 
     if password.contains("otpauth://") {
         let store = store.clone();
-        let d = Dialog::around(TextView::new(CATALOG.gettext("It seems like you are trying to save a TOTP code to the password store. This will reduce your 2FA solution to just 1FA, do you want to proceed?")))
-            .button(CATALOG.gettext("Save"), move |s| {
+        let d = Dialog::around(TextView::new("It seems like you are trying to save a TOTP code to the password store. This will reduce your 2FA solution to just 1FA, do you want to proceed?"))
+            .button("Save", move |s| {
                 do_new_password_save(s, path.as_ref(), password.as_ref(), &store, true);
             })
-            .dismiss_button(CATALOG.gettext("Close"));
+            .dismiss_button("Close");
 
         let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
             s.pop_layer();
@@ -783,7 +783,7 @@ fn create(ui: &mut Cursive, store: &PasswordStoreType) {
     let mut note_fields = LinearLayout::horizontal();
 
     path_fields.add_child(
-        TextView::new(CATALOG.gettext("Path: "))
+        TextView::new("Path: ")
             .with_name("path_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -794,7 +794,7 @@ fn create(ui: &mut Cursive, store: &PasswordStoreType) {
     );
 
     password_fields.add_child(
-        TextView::new(CATALOG.gettext("Password: "))
+        TextView::new("Password: ")
             .with_name("password_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -806,7 +806,7 @@ fn create(ui: &mut Cursive, store: &PasswordStoreType) {
     );
 
     note_fields.add_child(
-        TextView::new(CATALOG.gettext("Note: "))
+        TextView::new("Note: ")
             .with_name("note_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -824,8 +824,8 @@ fn create(ui: &mut Cursive, store: &PasswordStoreType) {
 
     let store = store.clone();
     let d = Dialog::around(fields)
-        .title(CATALOG.gettext("Add new password"))
-        .button(CATALOG.gettext("Password Options"), {
+        .title("Add new password")
+        .button("Password Options", {
             let category_value = category_value.clone();
             let reveal_flag = reveal_flag.clone();
             let password_length = password_length.clone();
@@ -833,16 +833,16 @@ fn create(ui: &mut Cursive, store: &PasswordStoreType) {
                 create_password_options_dialog(&category_value, &reveal_flag, &password_length, s);
             }
         })
-        .button(CATALOG.gettext("Generate Password"), move |s| {
+        .button("Generate Password", move |s| {
             generate_password_callback(&category_value, &password_length, s);
         })
-        .button(CATALOG.gettext("Generate Passphrase"), move |s| {
+        .button("Generate Passphrase", move |s| {
             generate_passphrase_callback(s);
         })
-        .button(CATALOG.gettext("Save"), move |ui: &mut Cursive| {
+        .button("Save", move |ui: &mut Cursive| {
             create_save(ui, &store);
         })
-        .dismiss_button(CATALOG.gettext("Cancel"));
+        .dismiss_button("Cancel");
 
     let ev = OnEventView::new(d)
         .on_event(Key::Esc, |s| {
@@ -877,7 +877,7 @@ fn delete_recipient(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
         let delete_id = l.selected_id().unwrap();
         l.remove_item(delete_id);
         ui.call_on_name("status_bar", |l: &mut TextView| {
-            l.set_content(CATALOG.gettext("Deleted team member from password store"));
+            l.set_content("Deleted team member from password store");
         });
         Ok(())
     } else {
@@ -889,9 +889,9 @@ fn delete_recipient_verification(ui: &mut Cursive, store: &PasswordStoreType) {
     let store = store.clone();
     ui.add_layer(CircularFocus::new(
         Dialog::around(TextView::new(
-            CATALOG.gettext("Are you sure you want to remove this person?"),
+            "Are you sure you want to remove this person?",
         ))
-        .button(CATALOG.gettext("Yes"), move |ui: &mut Cursive| {
+        .button("Yes", move |ui: &mut Cursive| {
             let res = delete_recipient(ui, &store);
             if let Err(err) = res {
                 helpers::errorbox(ui, &err);
@@ -899,7 +899,7 @@ fn delete_recipient_verification(ui: &mut Cursive, store: &PasswordStoreType) {
                 ui.pop_layer();
             }
         })
-        .dismiss_button(CATALOG.gettext("Cancel")),
+        .dismiss_button("Cancel"),
     ));
 }
 
@@ -914,7 +914,7 @@ fn add_recipient(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path
         Err(err) => helpers::errorbox(ui, &err),
         Ok(recipient) => {
             if recipient.trust_level != OwnerTrustLevel::Ultimate {
-                helpers::errorbox(ui, &pass::Error::Generic(CATALOG.gettext("Can't import team member due to that the GPG trust relationship level isn't Ultimate")));
+                helpers::errorbox(ui, &pass::Error::Generic("Can't import team member due to that the GPG trust relationship level isn't Ultimate"));
                 return Ok(());
             }
 
@@ -939,7 +939,7 @@ fn add_recipient(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path
 
                         ui.pop_layer();
                         ui.call_on_name("status_bar", |l: &mut TextView| {
-                            l.set_content(CATALOG.gettext("Added team member to password store"));
+                            l.set_content("Added team member to password store");
                         });
                     }
                 }
@@ -956,7 +956,7 @@ fn add_recipient_dialog(ui: &mut Cursive, store: &PasswordStoreType, config_path
     let mut dir_fields = LinearLayout::horizontal();
 
     recipient_fields.add_child(
-        TextView::new(CATALOG.gettext("GPG Key ID: "))
+        TextView::new("GPG Key ID: ")
             .with_name("key_id")
             .fixed_size((16_usize, 1_usize)),
     );
@@ -967,7 +967,7 @@ fn add_recipient_dialog(ui: &mut Cursive, store: &PasswordStoreType, config_path
     );
 
     dir_fields.add_child(
-        TextView::new(CATALOG.gettext("Directory: "))
+        TextView::new("Directory: ")
             .with_name("dir_id")
             .fixed_size((16_usize, 1_usize)),
     );
@@ -984,13 +984,13 @@ fn add_recipient_dialog(ui: &mut Cursive, store: &PasswordStoreType, config_path
     let config_path = config_path.to_path_buf();
     let cf = CircularFocus::new(
         Dialog::around(all_fields)
-            .button(CATALOG.gettext("Yes"), move |ui: &mut Cursive| {
+            .button("Yes", move |ui: &mut Cursive| {
                 let res = add_recipient(ui, &store, &config_path);
                 if let Err(err) = res {
                     helpers::errorbox(ui, &err);
                 }
             })
-            .dismiss_button(CATALOG.gettext("Cancel")),
+            .dismiss_button("Cancel"),
     );
 
     let ev = OnEventView::new(cf).on_event(Key::Esc, |s| {
@@ -1011,12 +1011,12 @@ fn render_recipient_label(
     };
 
     let trust = match &recipient.trust_level {
-        OwnerTrustLevel::Ultimate => CATALOG.gettext("Ultimate"),
-        OwnerTrustLevel::Full => CATALOG.gettext("Full"),
-        OwnerTrustLevel::Marginal => CATALOG.gettext("Marginal"),
-        OwnerTrustLevel::Never => CATALOG.gettext("Never"),
-        OwnerTrustLevel::Undefined => CATALOG.gettext("Undefined"),
-        _ => CATALOG.gettext("Unknown"),
+        OwnerTrustLevel::Ultimate => "Ultimate",
+        OwnerTrustLevel::Full => "Full",
+        OwnerTrustLevel::Marginal => "Marginal",
+        OwnerTrustLevel::Never => "Never",
+        OwnerTrustLevel::Undefined => "Undefined",
+        _ => "Unknown",
     };
 
     format!(
@@ -1026,9 +1026,9 @@ fn render_recipient_label(
         &recipient.name,
         trust,
         if recipient.not_usable {
-            CATALOG.gettext("Not Usable")
+            "Not Usable"
         } else {
-            CATALOG.gettext("Usable")
+            "Usable"
         },
         width_key = max_width_key,
         width_name = max_width_name
@@ -1119,13 +1119,13 @@ fn view_recipients_for_many_dirs(
         }
     }
     let d = Dialog::around(recipients_view)
-        .title(CATALOG.gettext("Team Members"))
-        .dismiss_button(CATALOG.gettext("Ok"));
+        .title("Team Members")
+        .dismiss_button("Ok");
 
     let ll = LinearLayout::new(Orientation::Vertical).child(d).child(
         LinearLayout::new(Orientation::Horizontal)
-            .child(TextView::new(CATALOG.gettext("ins: Add | ")))
-            .child(TextView::new(CATALOG.gettext("del: Remove"))),
+            .child(TextView::new("ins: Add | "))
+            .child(TextView::new("del: Remove")),
     );
 
     let store = store.clone();
@@ -1186,13 +1186,13 @@ fn view_recipients_for_dir(
     }
 
     let d = Dialog::around(recipients_view)
-        .title(CATALOG.gettext("Team Members"))
-        .dismiss_button(CATALOG.gettext("Ok"));
+        .title("Team Members")
+        .dismiss_button("Ok");
 
     let ll = LinearLayout::new(Orientation::Vertical).child(d).child(
         LinearLayout::new(Orientation::Horizontal)
-            .child(TextView::new(CATALOG.gettext("ins: Add | ")))
-            .child(TextView::new(CATALOG.gettext("del: Remove"))),
+            .child(TextView::new("ins: Add | "))
+            .child(TextView::new("del: Remove")),
     );
 
     let store = store.clone();
@@ -1223,7 +1223,7 @@ fn create_label(p: &pass::PasswordEntry, col: usize) -> String {
     let committed_by = p.committed_by.clone();
     let updated = p.updated;
     let name = substr(
-        &committed_by.unwrap_or_else(|| CATALOG.gettext("n/a").to_string()),
+        &committed_by.unwrap_or_else(|| "n/a".to_string()),
         0,
         15,
     );
@@ -1244,7 +1244,7 @@ fn create_label(p: &pass::PasswordEntry, col: usize) -> String {
         name,
         match updated {
             Some(d) => format!("{}", d.format("%Y-%m-%d")),
-            None => CATALOG.gettext("n/a").to_string(),
+            None => "n/a".to_string(),
         },
         col - 12 - 15 - 9, // Optimized for 80 cols
     )
@@ -1275,7 +1275,7 @@ fn do_search(store: &PasswordStoreType, ui: &mut Cursive, query: &str) {
 }
 
 fn help() {
-    println!("{}", CATALOG.gettext("A password manager that uses the file format of the standard unix password manager 'pass', implemented in Rust. Ripasso reads $HOME/.password-store/ by default, override this by setting the PASSWORD_STORE_DIR environmental variable."));
+    println!("{}", "A password manager that uses the file format of the standard unix password manager 'pass', implemented in Rust. Ripasso reads $HOME/.password-store/ by default, override this by setting the PASSWORD_STORE_DIR environmental variable.");
 }
 
 fn do_git_push(ui: &mut Cursive, store: &PasswordStoreType) {
@@ -1291,7 +1291,7 @@ fn git_push(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
         Err(err) => helpers::errorbox(ui, &err),
         Ok(()) => {
             ui.call_on_name("status_bar", |l: &mut TextView| {
-                l.set_content(CATALOG.gettext("Pushed to remote git repository"));
+                l.set_content("Pushed to remote git repository");
             });
         }
     }
@@ -1326,7 +1326,7 @@ fn git_pull(ui: &mut Cursive, store: &PasswordStoreType) -> Result<()> {
         },
     );
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Pulled from remote git repository"));
+        l.set_content("Pulled from remote git repository");
     });
 
     Ok(())
@@ -1341,8 +1341,8 @@ fn do_gpg_import(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path
     let result = pass::pgp_import(&mut *store.lock()?.lock()?, text, config_path)?;
 
     let d = Dialog::around(TextView::new(result))
-        .dismiss_button(CATALOG.gettext("Ok"))
-        .title(CATALOG.gettext("Import Results"));
+        .dismiss_button("Ok")
+        .title("Import Results");
 
     let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();
@@ -1361,9 +1361,9 @@ fn pgp_import(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path) {
             .with_name("gpg_import_text_area")
             .min_size((50, 20)),
     )
-    .title(CATALOG.gettext("Manual GPG Import"))
-    .dismiss_button(CATALOG.gettext("Cancel"))
-    .button(CATALOG.gettext("Import"), move |s| {
+    .title("Manual GPG Import")
+    .dismiss_button("Cancel")
+    .button("Import", move |s| {
         let res = do_gpg_import(s, &store, &config_path);
         if let Err(err) = res {
             helpers::errorbox(s, &err);
@@ -1383,8 +1383,8 @@ fn do_gpg_pull(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path) 
     let result = pass::pgp_pull(&mut *store.lock()?.lock()?, config_path)?;
 
     let d = Dialog::around(TextView::new(result))
-        .dismiss_button(CATALOG.gettext("Ok"))
-        .title(CATALOG.gettext("Import Results"));
+        .dismiss_button("Ok")
+        .title("Import Results");
 
     let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();
@@ -1398,17 +1398,17 @@ fn do_gpg_pull(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path) 
 fn pgp_pull(ui: &mut Cursive, store: &PasswordStoreType, config_path: &Path) {
     let store = store.clone();
     let config_path = config_path.to_owned();
-    let d = Dialog::around(TextView::new(CATALOG.gettext(
+    let d = Dialog::around(TextView::new(
         "Download pgp data from keys.openpgp.org and import them into your key ring?",
-    )))
-    .dismiss_button(CATALOG.gettext("Cancel"))
-    .button(CATALOG.gettext("Download"), move |ui| {
+    ))
+    .dismiss_button("Cancel")
+    .button("Download", move |ui| {
         let res = do_gpg_pull(ui, &store, &config_path);
         if let Err(err) = res {
             helpers::errorbox(ui, &err);
         }
     })
-    .title(CATALOG.gettext("GPG Download"));
+    .title("GPG Download");
 
     let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();
@@ -1684,7 +1684,7 @@ fn save_edit_config(
     }
 
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Updated config file"));
+        l.set_content("Updated config file");
     });
 
     Ok(())
@@ -1722,7 +1722,7 @@ fn save_new_config(
     l.add_item(e_n, e_n.clone());
 
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Updated config file"));
+        l.set_content("Updated config file");
     });
 
     Ok(())
@@ -1731,7 +1731,7 @@ fn save_new_config(
 fn create_name_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
     let mut name_fields = LinearLayout::horizontal();
     name_fields.add_child(
-        TextView::new(CATALOG.gettext("Name: "))
+        TextView::new("Name: ")
             .with_name("name_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -1748,7 +1748,7 @@ fn create_name_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
 fn create_directory_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
     let mut directory_fields = LinearLayout::horizontal();
     directory_fields.add_child(
-        TextView::new(CATALOG.gettext("Directory: "))
+        TextView::new("Directory: ")
             .with_name("directory_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -1765,7 +1765,7 @@ fn create_directory_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
 fn create_keys_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
     let mut keys_fields = LinearLayout::horizontal();
     keys_fields.add_child(
-        TextView::new(CATALOG.gettext("Enforce signing of .gpg-id file: "))
+        TextView::new("Enforce signing of .gpg-id file: ")
             .with_name("keys_name")
             .fixed_size((30_usize, 1_usize)),
     );
@@ -1781,7 +1781,7 @@ fn create_keys_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
 fn create_pgp_fields() -> LinearLayout {
     let mut pgp_fields = LinearLayout::horizontal();
     pgp_fields.add_child(
-        TextView::new(CATALOG.gettext("PGP Implementation: "))
+        TextView::new("PGP Implementation: ")
             .with_name("edit_pgp_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -1801,7 +1801,7 @@ fn create_pgp_fields() -> LinearLayout {
 fn create_fingerprint_fields(store: &MutexGuard<PasswordStore>) -> LinearLayout {
     let mut fingerprint_fields = LinearLayout::horizontal();
     fingerprint_fields.add_child(
-        TextView::new(CATALOG.gettext("Own key fingerprint: "))
+        TextView::new("Own key fingerprint: ")
             .with_name("name_own_fingerprint")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -1865,7 +1865,7 @@ fn edit_store_in_config(
     fields.add_child(fingerprint_fields);
 
     fields.add_child(
-        TextView::new(CATALOG.gettext("Store Members: ")).fixed_size((30_usize, 1_usize)),
+        TextView::new("Store Members: ").fixed_size((30_usize, 1_usize)),
     );
     let store_recipients = store.all_recipients()?;
     for (i, recipient) in all_recipients.iter().enumerate() {
@@ -1889,12 +1889,12 @@ fn edit_store_in_config(
     let home2 = home.clone();
 
     let d = Dialog::around(fields)
-        .title(CATALOG.gettext("Edit store config"))
-        .button(CATALOG.gettext("Save"), move |ui: &mut Cursive| {
+        .title("Edit store config")
+        .button("Save", move |ui: &mut Cursive| {
             do_save_edit_config(ui, &stores2, &name2, &config_file_location, home.as_deref());
             ui.pop_layer();
         })
-        .dismiss_button(CATALOG.gettext("Cancel"));
+        .dismiss_button("Cancel");
 
     let ev = OnEventView::new(d)
         .on_event(Key::Esc, |s| {
@@ -1946,7 +1946,7 @@ fn delete_store_from_config(
     l.remove_item(delete_id);
 
     ui.call_on_name("status_bar", |l: &mut TextView| {
-        l.set_content(CATALOG.gettext("Updated config file"));
+        l.set_content("Updated config file");
     });
 
     Ok(())
@@ -1955,7 +1955,7 @@ fn delete_store_from_config(
 fn add_create_name_fields() -> LinearLayout {
     let mut name_fields = LinearLayout::horizontal();
     name_fields.add_child(
-        TextView::new(CATALOG.gettext("Name: "))
+        TextView::new("Name: ")
             .with_name("new_name_name")
             .fixed_size((30_usize, 1_usize)),
     );
@@ -1970,7 +1970,7 @@ fn add_create_name_fields() -> LinearLayout {
 fn add_create_directory_fields() -> LinearLayout {
     let mut directory_fields = LinearLayout::horizontal();
     directory_fields.add_child(
-        TextView::new(CATALOG.gettext("Directory: "))
+        TextView::new("Directory: ")
             .with_name("new_directory_name")
             .fixed_size((30_usize, 1_usize)),
     );
@@ -1985,7 +1985,7 @@ fn add_create_directory_fields() -> LinearLayout {
 fn add_create_keys_fields() -> LinearLayout {
     let mut keys_fields = LinearLayout::horizontal();
     keys_fields.add_child(
-        TextView::new(CATALOG.gettext("Enforce signing of .gpg-id file: "))
+        TextView::new("Enforce signing of .gpg-id file: ")
             .with_name("new_keys_name")
             .fixed_size((30_usize, 1_usize)),
     );
@@ -1996,7 +1996,7 @@ fn add_create_keys_fields() -> LinearLayout {
 fn add_create_pgp_fields() -> LinearLayout {
     let mut pgp_fields = LinearLayout::horizontal();
     pgp_fields.add_child(
-        TextView::new(CATALOG.gettext("PGP Implementation: "))
+        TextView::new("PGP Implementation: ")
             .with_name("new_pgp_name")
             .fixed_size((10_usize, 1_usize)),
     );
@@ -2030,7 +2030,7 @@ fn add_store_to_config(
     fields.add_child(directory_fields);
     fields.add_child(keys_fields);
     fields.add_child(
-        TextView::new(CATALOG.gettext("Store Members: ")).fixed_size((30_usize, 1_usize)),
+        TextView::new("Store Members: ").fixed_size((30_usize, 1_usize)),
     );
     for (i, recipient) in all_recipients.iter().enumerate() {
         let mut row = LinearLayout::horizontal();
@@ -2048,8 +2048,8 @@ fn add_store_to_config(
     let all_recipients2 = all_recipients.clone();
 
     let d = Dialog::around(fields)
-        .title(CATALOG.gettext("New store config"))
-        .button(CATALOG.gettext("Save"), move |ui: &mut Cursive| {
+        .title("New store config")
+        .button("Save", move |ui: &mut Cursive| {
             let res = save_new_config(
                 ui,
                 &stores,
@@ -2063,7 +2063,7 @@ fn add_store_to_config(
                 ui.pop_layer();
             }
         })
-        .dismiss_button(CATALOG.gettext("Cancel"));
+        .dismiss_button("Cancel");
 
     let ev = OnEventView::new(d)
         .on_event(Key::Esc, |s| {
@@ -2119,14 +2119,14 @@ fn show_manage_config_dialog(
     }
 
     let d = Dialog::around(stores_view)
-        .title(CATALOG.gettext("Edit password stores"))
-        .dismiss_button(CATALOG.gettext("Ok"));
+        .title("Edit password stores")
+        .dismiss_button("Ok");
 
     let ll = LinearLayout::new(Orientation::Vertical).child(d).child(
         LinearLayout::new(Orientation::Horizontal)
-            .child(TextView::new(CATALOG.gettext("ctrl-e: Edit | ")))
-            .child(TextView::new(CATALOG.gettext("ins: Add | ")))
-            .child(TextView::new(CATALOG.gettext("del: Remove"))),
+            .child(TextView::new("ctrl-e: Edit | "))
+            .child(TextView::new("ins: Add | "))
+            .child(TextView::new("del: Remove")),
     );
 
     let stores2 = stores.clone();
@@ -2249,13 +2249,13 @@ fn validate_setup(
 
     // verify that the git config is correct
     if !store.lock()?.lock()?.has_configured_username() {
-        eprintln!("{}", CATALOG.gettext("You haven't configured you name and email in git, doing so will make cooperation with your team easier, you can do it like this:\ngit config --global user.name \"John Doe\"\ngit config --global user.email \"email@example.com\"\n\nAlso consider configuring git to sign your commits with GPG:\ngit config --global user.signingkey 3AA5C34371567BD2\ngit config --global commit.gpgsign true"));
+        eprintln!("{}", "You haven't configured you name and email in git, doing so will make cooperation with your team easier, you can do it like this:\ngit config --global user.name \"John Doe\"\ngit config --global user.email \"email@example.com\"\n\nAlso consider configuring git to sign your commits with GPG:\ngit config --global user.signingkey 3AA5C34371567BD2\ngit config --global commit.gpgsign true");
         process::exit(1);
     }
 
     for password in &store.lock()?.lock()?.passwords {
         if password.is_in_git == pass::RepositoryStatus::NotInRepo {
-            eprintln!("{}", CATALOG.gettext("The password store is backed by a git repository, but there is passwords there that's not in git. Please add them, otherwise they might get lost."));
+            eprintln!("{}", "The password store is backed by a git repository, but there is passwords there that's not in git. Please add them, otherwise they might get lost.");
             process::exit(1);
         }
     }
@@ -2275,7 +2275,7 @@ fn check_args() {
             } else {
                 eprintln!(
                     "{}",
-                    CATALOG.gettext("Unknown argument, usage: ripasso-cursive [-h|--help]")
+                    "Unknown argument, usage: ripasso-cursive [-h|--help]"
                 );
                 process::exit(1);
             }
@@ -2283,7 +2283,7 @@ fn check_args() {
         _ => {
             eprintln!(
                 "{}",
-                CATALOG.gettext("Unknown argument, usage: ripasso-cursive [-h|--help]")
+                "Unknown argument, usage: ripasso-cursive [-h|--help]"
             );
             process::exit(1);
         }
@@ -2406,7 +2406,7 @@ fn add_layers(ui: &mut Cursive, store: &PasswordStoreType) {
             )
             .child(
                 LinearLayout::new(Orientation::Horizontal)
-                    .child(TextView::new(CATALOG.gettext("F1: Menu | ")))
+                    .child(TextView::new("F1: Menu | "))
                     .child(TextView::new("").with_name("status_bar"))
                     .full_width(),
             ),
@@ -2469,7 +2469,7 @@ fn create_stores_tree(
         });
     }
     tree.add_delimiter();
-    tree.add_leaf(CATALOG.gettext("Manage"), move |ui: &mut Cursive| {
+    tree.add_leaf("Manage", move |ui: &mut Cursive| {
         do_show_manage_config_dialog(
             ui,
             stores.clone(),
@@ -2491,52 +2491,52 @@ fn add_menubar(
     let xdg_data_home = xdg_data_home.to_path_buf();
     let config_file_location = config_file_location.to_path_buf();
     ui.menubar().add_subtree(
-        CATALOG.gettext("Operations"),
+        "Operations",
         Tree::new()
-            .leaf(CATALOG.gettext("Copy (ctrl-y)"), {
+            .leaf("Copy (ctrl-y)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     copy(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Copy Name (ctrl-u)"), copy_name)
-            .leaf(CATALOG.gettext("Copy MFA Code (ctrl-b)"), {
+            .leaf("Copy Name (ctrl-u)", copy_name)
+            .leaf("Copy MFA Code (ctrl-b)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     copy_mfa(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Open (ctrl-o)"), {
+            .leaf("Open (ctrl-o)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     do_open(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("File History (ctrl-h)"), {
+            .leaf("File History (ctrl-h)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     do_show_file_history(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Create (ins) "), {
+            .leaf("Create (ins) ", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     create(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Delete (del)"), {
+            .leaf("Delete (del)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     delete(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Rename file (ctrl-r)"), {
+            .leaf("Rename file (ctrl-r)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     rename_file_dialog(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Team Members (ctrl-v)"), {
+            .leaf("Team Members (ctrl-v)", {
                 let store = store.clone();
                 let xdg_data_home = xdg_data_home.clone();
                 move |ui: &mut Cursive| {
@@ -2544,38 +2544,38 @@ fn add_menubar(
                 }
             })
             .delimiter()
-            .leaf(CATALOG.gettext("Git Pull (ctrl-f)"), {
+            .leaf("Git Pull (ctrl-f)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     do_git_pull(ui, &store);
                 }
             })
-            .leaf(CATALOG.gettext("Git Push (ctrl-g)"), {
+            .leaf("Git Push (ctrl-g)", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     do_git_push(ui, &store);
                 }
             })
             .delimiter()
-            .leaf(CATALOG.gettext("Pull PGP Certificates"), {
+            .leaf("Pull PGP Certificates", {
                 let store = store.clone();
                 let xdg_data_home = xdg_data_home.clone();
                 move |ui: &mut Cursive| {
                     pgp_pull(ui, &store, &xdg_data_home);
                 }
             })
-            .leaf(CATALOG.gettext("Import PGP Certificate from text"), {
+            .leaf("Import PGP Certificate from text", {
                 let store = store.clone();
                 move |ui: &mut Cursive| {
                     pgp_import(ui, &store, &xdg_data_home);
                 }
             })
             .delimiter()
-            .leaf(CATALOG.gettext("Quit (esc)"), Cursive::quit),
+            .leaf("Quit (esc)", Cursive::quit),
     );
 
     let tree = create_stores_tree(store, stores, &config_file_location, home)?;
-    ui.menubar().add_subtree(CATALOG.gettext("Stores"), tree);
+    ui.menubar().add_subtree("Stores", tree);
 
     Ok(())
 }
@@ -2592,7 +2592,7 @@ fn main() -> Result<()> {
             if let Some(home_path) = &home {
                 home_path.join(".local")
             } else {
-                eprintln!("{}", CATALOG.gettext("No home directory set"));
+                eprintln!("{}", "No home directory set");
                 process::exit(1);
             }
         }

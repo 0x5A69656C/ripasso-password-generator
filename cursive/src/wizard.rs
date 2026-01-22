@@ -36,7 +36,7 @@ fn create_git_repo(ui: &mut Cursive, password_store_dir: Option<&Path>, home: Op
     if init_res.is_err() {
         helpers::errorbox(ui, &init_res.err().unwrap());
     } else {
-        let message = super::CATALOG.gettext("Initialized password repo with Ripasso");
+        let message = "Initialized password repo with Ripasso";
         match pass::PasswordStore::new(
             "default",
             password_store_dir,
@@ -70,21 +70,21 @@ fn do_create(ui: &mut Cursive, password_store_dir: Option<&Path>, home: Option<&
         std::fs::write(pass_home, key_id).unwrap_or_else(|_| {
             panic!(
                 "{}",
-                super::CATALOG.gettext("Unable to write file").to_string()
+                "Unable to write file".to_string()
             )
         });
 
         let password_store_dir2 = password_store_dir.clone();
         let d = Dialog::around(TextView::new(
-            super::CATALOG.gettext("Also create a git repository for the encrypted files?"),
+            "Also create a git repository for the encrypted files?",
         ))
-        .button(super::CATALOG.gettext("Create"), move |ui: &mut Cursive| {
+        .button("Create", move |ui: &mut Cursive| {
             create_git_repo(ui, password_store_dir2.as_deref(), home.as_deref());
         })
-        .button(super::CATALOG.gettext("No"), |s| {
+        .button("No", |s| {
             s.quit();
         })
-        .title(super::CATALOG.gettext("Git Init"));
+        .title("Git Init");
 
         ui.add_layer(d);
     }
@@ -96,10 +96,10 @@ fn create_store(ui: &mut Cursive, password_store_dir: Option<&Path>, home: Optio
     let home = home.map(ToOwned::to_owned);
     let home2 = home.clone();
     let d2 = Dialog::around(LinearLayout::new(Orientation::Vertical)
-        .child(TextView::new(super::CATALOG.gettext("Ripasso uses GPG in order to encrypt the stored passwords.\nPlease enter your GPG key ID")))
+        .child(TextView::new("Ripasso uses GPG in order to encrypt the stored passwords.\nPlease enter your GPG key ID"))
         .child(EditView::new().with_name("initial_key_id"))
     )
-        .button(super::CATALOG.gettext("Create"), move |ui: &mut Cursive| {
+        .button("Create", move |ui: &mut Cursive| {
             do_create(ui, password_store_dir.as_deref(), home.as_deref());
         });
 
@@ -134,22 +134,22 @@ pub fn show_init_menu(password_store_dir: Option<&Path>, home: Option<&Path>) {
             )
             .child(
                 LinearLayout::new(Orientation::Horizontal)
-                    .child(TextView::new(super::CATALOG.gettext("F1: Menu | ")))
+                    .child(TextView::new("F1: Menu | "))
                     .full_width(),
             ),
     );
 
     let password_store_dir2 = password_store_dir.map(ToOwned::to_owned);
     let home = home.map(ToOwned::to_owned);
-    let d = Dialog::around(TextView::new(super::CATALOG.gettext("Welcome to Ripasso, it seems like you don't have a password store directory yet would you like to create it?\nIt's created in $HOME/.password-store or where the PASSWORD_STORE_DIR environmental variable points.")))
-        .button(super::CATALOG.gettext("Create"), move |ui: &mut Cursive| {
+    let d = Dialog::around(TextView::new("Welcome to Ripasso, it seems like you don't have a password store directory yet would you like to create it?\nIt's created in $HOME/.password-store or where the PASSWORD_STORE_DIR environmental variable points."))
+        .button("Create", move |ui: &mut Cursive| {
             create_store(ui, password_store_dir2.as_deref(), home.as_deref());
         })
-        .button(super::CATALOG.gettext("Cancel"), |s| {
+        .button("Cancel", |s| {
             s.quit();
             std::process::exit(0);
         })
-        .title(super::CATALOG.gettext("Init"));
+        .title("Init");
 
     ui.add_layer(d);
 

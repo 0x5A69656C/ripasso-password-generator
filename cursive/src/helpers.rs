@@ -31,16 +31,16 @@ static CLIPBOARD: LazyLock<Arc<Mutex<Clipboard>>> =
 /// Displays an error in a cursive dialog
 pub fn errorbox(ui: &mut Cursive, err: &pass::Error) {
     let text = match err {
-        pass::Error::RecipientNotInKeyRing(key_id) => super::CATALOG
-            .gettext("Team member with key id {} isn't in your GPG keyring, fetch it first")
+        pass::Error::RecipientNotInKeyRing(key_id) => format!(
+            "Team member with key id {} isn't in your GPG keyring, fetch it first", key_id)
             .to_string()
             .replace("{}", key_id),
         _ => format!("{err}"),
     };
 
     let d = Dialog::around(TextView::new(text))
-        .dismiss_button(super::CATALOG.gettext("Ok"))
-        .title(super::CATALOG.gettext("Error"));
+        .dismiss_button("Ok")
+        .title("Error");
 
     let ev = OnEventView::new(d).on_event(Key::Esc, |s| {
         s.pop_layer();

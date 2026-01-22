@@ -16,7 +16,6 @@ arboard = { version = "3", features = ["wayland-data-control"]}
 ripasso = { path = "../", version = "0.8.0" }
 locale_config = "0.3"
 unic-langid = "0.9"
-gettext = "0.4"
 terminal_size = "0.4"
 hex = "0.4"
 zeroize = { version = "1", features = ["zeroize_derive", "alloc"] }
